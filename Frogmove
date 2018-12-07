@@ -1,0 +1,660 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 04.12.2018 17:13:47
+// Design Name: 
+// Module Name: FrogMove
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module FrogMove(
+    input centre,
+    output [10:0] frogpos_x,
+    output [9:0] frogpos_y,
+    output [10:0] carpos_x,
+    output [9:0] carpos_y,
+    output [10:0] carpos01_x, 
+    output [9:0] carpos01_y,  
+    output [10:0] carpos1_x,
+    output [9:0] carpos1_y,
+    output [10:0] carpos11_x,
+    output [9:0] carpos11_y,
+    output [10:0] carpos2_x,
+    output [9:0] carpos2_y,
+    output [10:0] carpos21_x,
+    output [9:0] carpos21_y,
+    output [10:0] logpos_x,
+    output [9:0] logpos_y,
+    output [10:0] logpos01_x,
+    output [9:0] logpos01_y,
+    output [10:0] logpos1_x,
+    output [9:0] logpos1_y,
+    output [10:0] logpos11_x,
+    output [9:0] logpos11_y, 
+    output [10:0] logpos2_x,
+    output [9:0] logpos2_y,
+    output [10:0] logpos21_x,
+    output [9:0] logpos21_y, 
+    output win,
+    input sixclk,
+    input clk,
+    input up, 
+    input down,    
+    input right,  
+    input left,
+    output [3:0] lostlive
+    );
+    
+    reg [3:0]lostlive_reg = 0;
+    
+    reg win_reg = 0;
+    
+    reg [10:0]blkpos_x_reg = 720;
+    reg [9:0]blkpos_y_reg = 835;
+    
+    reg [10:0] carpos_x_reg = 10;
+    reg [9:0] carpos_y_reg = 506;
+    reg [10:0] carpos01_x_reg = 638;  
+    reg [9:0] carpos01_y_reg = 506;  
+    reg [10:0] carpos1_x_reg = 1286;
+    reg [9:0] carpos1_y_reg = 611;
+    reg [10:0] carpos11_x_reg = 658;  
+    reg [9:0] carpos11_y_reg = 611;  
+    reg [10:0] carpos2_x_reg = 10;
+    reg [9:0] carpos2_y_reg = 711;
+    reg [10:0] carpos21_x_reg = 638;
+    reg [9:0] carpos21_y_reg = 711;
+    
+    reg [10:0] logpos_x_reg = 10;  
+    reg [9:0] logpos_y_reg = 306;
+    reg [10:0] logpos01_x_reg = 638;  
+    reg [9:0] logpos01_y_reg = 306;
+    reg [10:0] logpos1_x_reg = 1286;  
+    reg [9:0] logpos1_y_reg = 206;
+    reg [10:0] logpos11_x_reg = 658;
+    reg [9:0] logpos11_y_reg = 206;  
+    reg [10:0] logpos2_x_reg = 10;  
+    reg [9:0] logpos2_y_reg = 106;
+    reg [10:0] logpos21_x_reg = 638;  
+    reg [9:0] logpos21_y_reg = 106;  
+    
+always @ (posedge sixclk)
+    begin
+    if (centre == 1)
+    begin
+        win_reg <= 0;
+        blkpos_x_reg <= 736;  
+        blkpos_y_reg <= 835; 
+    end
+    else
+    if (blkpos_y_reg >= carpos_y_reg - 32 && blkpos_y_reg <= carpos_y_reg + 80 && blkpos_x_reg >= carpos_x_reg -32 && blkpos_x_reg <= carpos_x_reg + 144)
+    begin
+        lostlive_reg <= 1;
+        blkpos_x_reg <= 736;
+        blkpos_y_reg <= 835;
+    end 
+    else
+    if (blkpos_y_reg >= carpos01_y_reg - 32 && blkpos_y_reg <= carpos01_y_reg + 80 && blkpos_x_reg >= carpos01_x_reg -32 && blkpos_x_reg <= carpos01_x_reg + 144)
+    begin 
+        lostlive_reg <= 1;
+        blkpos_x_reg <= 736;
+        blkpos_y_reg <= 835;
+    end
+    else
+    if (blkpos_y_reg >= carpos1_y_reg - 32 && blkpos_y_reg <= carpos1_y_reg + 80 && blkpos_x_reg >= carpos1_x_reg -32 && blkpos_x_reg <= carpos1_x_reg + 144)
+    begin
+        lostlive_reg <= 1;
+        blkpos_x_reg <= 736;
+        blkpos_y_reg <= 835;
+    end
+    else
+    if (blkpos_y_reg >= carpos11_y_reg - 32 && blkpos_y_reg <= carpos11_y_reg + 80 && blkpos_x_reg >= carpos11_x_reg -32 && blkpos_x_reg <= carpos11_x_reg + 144)
+    begin
+        blkpos_x_reg <= 736;
+        blkpos_y_reg <= 835;
+        lostlive_reg <= 1;
+    end
+    else
+    if (blkpos_y_reg >= carpos2_y_reg - 32 && blkpos_y_reg <= carpos2_y_reg + 80 && blkpos_x_reg >= carpos2_x_reg -32 && blkpos_x_reg <= carpos2_x_reg + 144)
+    begin
+        lostlive_reg <= 1;
+        blkpos_x_reg <= 736;
+        blkpos_y_reg <= 835;
+    end
+    else                                                                                                                                                              
+    if (blkpos_y_reg >= carpos21_y_reg - 32 && blkpos_y_reg <= carpos21_y_reg + 80 && blkpos_x_reg >= carpos21_x_reg -32 && blkpos_x_reg <= carpos21_x_reg + 144)         
+    begin   
+        lostlive_reg <= 1;                                                                                                                                                          
+        blkpos_x_reg <= 736;                                                                                                                                          
+        blkpos_y_reg <= 835;                                                                                                                                                                                                                                                                                      
+    end 
+    else
+        begin
+        if (blkpos_y_reg >= logpos_y_reg - 12 && blkpos_y_reg <= logpos_y_reg + 80 && blkpos_x_reg >= logpos_x_reg -2 && blkpos_x_reg <= logpos_x_reg + 112)
+            begin
+            lostlive_reg <= 0;
+            blkpos_x_reg <= blkpos_x_reg + 2;
+            if (up == 1)
+                begin
+                if (blkpos_y_reg <= 15)
+                begin
+                    blkpos_y_reg <= blkpos_y_reg;
+                end
+                else
+                begin
+                    blkpos_y_reg <= blkpos_y_reg - 10;
+                end
+                end
+            else
+                begin
+                if (down == 1)
+                    begin
+                    if (blkpos_y_reg >= 850)
+                        blkpos_y_reg <= blkpos_y_reg;
+                    else
+                        blkpos_y_reg <= blkpos_y_reg + 10;
+                    end
+                else
+                    begin
+                    if (right == 1)
+                        begin
+                        if (blkpos_x_reg >= 1395)
+                            blkpos_x_reg <= blkpos_x_reg;
+                        else
+                            blkpos_x_reg <= blkpos_x_reg + 6;
+                        end
+                    else
+                        begin
+                        if (left == 1)
+                            begin
+                            if (blkpos_x_reg <= 10)
+                                blkpos_x_reg <= blkpos_x_reg;
+                            else
+                                blkpos_x_reg <= blkpos_x_reg - 2;
+                            end
+                        end
+                    end
+                end
+            end
+            //blkpos_y_reg <= _____;
+        else
+        begin
+        if (blkpos_y_reg >= logpos01_y_reg - 12 && blkpos_y_reg <= logpos01_y_reg + 80 && blkpos_x_reg >= logpos01_x_reg -2 && blkpos_x_reg <= logpos01_x_reg + 112)
+            begin
+            lostlive_reg <= 0;
+            blkpos_x_reg <= blkpos_x_reg + 2;
+            if (up == 1)
+                begin
+                if (blkpos_y_reg <= 15)
+                begin
+                    blkpos_y_reg <= blkpos_y_reg;
+                end
+                else
+                begin
+                    blkpos_y_reg <= blkpos_y_reg - 10;
+                end
+                end
+            else
+                begin
+                if (down == 1)
+                    begin
+                    if (blkpos_y_reg >= 850)
+                        blkpos_y_reg <= blkpos_y_reg;
+                    else
+                        blkpos_y_reg <= blkpos_y_reg + 10;
+                    end
+                else
+                    begin
+                    if (right == 1)
+                        begin
+                        if (blkpos_x_reg >= 1395)
+                            blkpos_x_reg <= blkpos_x_reg;
+                        else
+                            blkpos_x_reg <= blkpos_x_reg + 6;
+                        end
+                    else
+                        begin
+                        if (left == 1)
+                            begin
+                            if (blkpos_x_reg <= 10)
+                                blkpos_x_reg <= blkpos_x_reg;
+                            else
+                                blkpos_x_reg <= blkpos_x_reg - 2;
+                            end
+                        end
+                    end
+                end
+            end
+            //blkpos_y_reg <= _____;
+        else
+        begin
+        if (blkpos_y_reg >= logpos1_y_reg - 12 && blkpos_y_reg <= logpos1_y_reg + 92 && blkpos_x_reg >= logpos1_x_reg -2 && blkpos_x_reg <= logpos1_x_reg + 256)
+             begin
+             lostlive_reg <= 0;
+             blkpos_x_reg <= blkpos_x_reg - 5;
+             if (up == 1)
+                 begin
+                 if (blkpos_y_reg <= 15)
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg;
+                 end
+                 else
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg - 10;
+                 end
+                 end
+             else
+                 begin
+                 if (down == 1)
+                     begin
+                     if (blkpos_y_reg >= 850)
+                         blkpos_y_reg <= blkpos_y_reg;
+                     else
+                         blkpos_y_reg <= blkpos_y_reg + 10;
+                     end
+                 else
+                     begin
+                     if (right == 1)
+                         begin
+                         if (blkpos_x_reg >= 1395)
+                             blkpos_x_reg <= blkpos_x_reg;
+                         else
+                             blkpos_x_reg <= blkpos_x_reg - 1;
+                         end
+                     else
+                         begin
+                         if (left == 1)
+                             begin
+                             if (blkpos_x_reg <= 10)
+                                 blkpos_x_reg <= blkpos_x_reg;
+                             else
+                                 blkpos_x_reg <= blkpos_x_reg - 9;
+                             end
+                         end
+                     end
+                 end
+             end
+             //blkpos_y_reg <= _____;
+         else
+         begin
+         if (blkpos_y_reg >= logpos11_y_reg - 12 && blkpos_y_reg <= logpos11_y_reg + 92 && blkpos_x_reg >= logpos11_x_reg -2 && blkpos_x_reg <= logpos11_x_reg + 256)
+             begin
+             lostlive_reg <= 0;
+             blkpos_x_reg <= blkpos_x_reg - 5;
+             if (up == 1)
+                 begin
+                 if (blkpos_y_reg <= 15)
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg;
+                 end
+                 else
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg - 10;
+                 end
+                 end
+             else
+                 begin
+                 if (down == 1)
+                     begin
+                     if (blkpos_y_reg >= 850)
+                         blkpos_y_reg <= blkpos_y_reg;
+                     else
+                         blkpos_y_reg <= blkpos_y_reg + 10;
+                     end
+                 else
+                     begin
+                     if (right == 1)
+                         begin
+                         if (blkpos_x_reg >= 1395)
+                             blkpos_x_reg <= blkpos_x_reg;
+                         else
+                             blkpos_x_reg <= blkpos_x_reg - 1;
+                         end
+                     else
+                         begin
+                         if (left == 1)
+                             begin
+                             if (blkpos_x_reg <= 10)
+                                 blkpos_x_reg <= blkpos_x_reg;
+                             else
+                                 blkpos_x_reg <= blkpos_x_reg - 9;
+                             end
+                         end
+                     end
+                 end
+             end
+             //blkpos_y_reg <= _____;
+         else
+         begin
+         if (blkpos_y_reg >= logpos2_y_reg - 12 && blkpos_y_reg <= logpos2_y_reg + 92 && blkpos_x_reg >= logpos2_x_reg -2 && blkpos_x_reg <= logpos2_x_reg + 112)
+             begin
+             lostlive_reg <= 0;
+             blkpos_x_reg <= blkpos_x_reg + 7;
+             if (up == 1)
+                 begin
+                 if (blkpos_y_reg <= 15)
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg;
+                 end
+                 else
+                 begin
+                     blkpos_y_reg <= blkpos_y_reg - 10;
+                 end
+                 end
+             else
+                 begin
+                 if (down == 1)
+                     begin
+                     if (blkpos_y_reg >= 850)
+                         blkpos_y_reg <= blkpos_y_reg;
+                     else
+                         blkpos_y_reg <= blkpos_y_reg + 10;
+                     end
+                 else
+                     begin
+                     if (right == 1)
+                         begin
+                         if (blkpos_x_reg >= 1395)
+                             blkpos_x_reg <= blkpos_x_reg;
+                         else
+                             blkpos_x_reg <= blkpos_x_reg + 11;
+                         end
+                     else
+                         begin
+                         if (left == 1)
+                             begin
+                             if (blkpos_x_reg <= 10)
+                                 blkpos_x_reg <= blkpos_x_reg;
+                             else
+                                 blkpos_x_reg <= blkpos_x_reg + 3;
+                             end
+                         end
+                     end
+                 end
+             end
+             //blkpos_y_reg <= _____;
+         else
+         begin
+            if (blkpos_y_reg >= logpos21_y_reg - 12 && blkpos_y_reg <= logpos21_y_reg + 92 && blkpos_x_reg >= logpos21_x_reg -2 && blkpos_x_reg <= logpos21_x_reg + 112)
+                begin
+                lostlive_reg <= 0;
+                blkpos_x_reg <= blkpos_x_reg + 7;
+                if (up == 1)
+                    begin
+                    if (blkpos_y_reg <= 15)
+                    begin
+                        blkpos_y_reg <= blkpos_y_reg;
+                    end
+                    else
+                    begin
+                        blkpos_y_reg <= blkpos_y_reg - 10;
+                    end
+                    end
+                else
+                    begin
+                    if (down == 1)
+                        begin
+                        if (blkpos_y_reg >= 850)
+                            blkpos_y_reg <= blkpos_y_reg;
+                        else
+                            blkpos_y_reg <= blkpos_y_reg + 10;
+                        end
+                    else
+                        begin
+                        if (right == 1)
+                            begin
+                            if (blkpos_x_reg >= 1395)
+                                blkpos_x_reg <= blkpos_x_reg;
+                            else
+                                blkpos_x_reg <= blkpos_x_reg + 11;
+                            end
+                        else
+                            begin
+                            if (left == 1)
+                                begin
+                                if (blkpos_x_reg <= 10)
+                                    blkpos_x_reg <= blkpos_x_reg;
+                                else
+                                    blkpos_x_reg <= blkpos_x_reg + 3;
+                                end
+                            end
+                        end
+                    end
+                end
+                //blkpos_y_reg <= _____;
+            else
+         if(blkpos_y_reg <= 385 && blkpos_y_reg >= 105)
+         begin
+         blkpos_x_reg <= 736;
+         blkpos_y_reg <= 835;
+         lostlive_reg <= 1;
+         end
+         else
+         if (blkpos_y_reg <= 80 && blkpos_y_reg >= 10)
+            begin
+            win_reg <= 1;
+            end
+         else
+         begin
+            lostlive_reg <= 0;
+            if (up == 1)
+                begin
+                if (blkpos_y_reg <= 15)
+                begin
+                    blkpos_y_reg <= blkpos_y_reg;
+                end
+                else
+                begin
+                    blkpos_y_reg <= blkpos_y_reg - 10;
+                end
+                end
+            else
+                begin
+                if (down == 1)
+                    begin
+                    if (blkpos_y_reg >= 850)
+                        blkpos_y_reg <= blkpos_y_reg;
+                    else
+                        blkpos_y_reg <= blkpos_y_reg + 10;
+                    end
+                else
+                    begin
+                    if (right == 1)
+                        begin
+                        if (blkpos_x_reg >= 1395)
+                            blkpos_x_reg <= blkpos_x_reg;
+                        else
+                            blkpos_x_reg <= blkpos_x_reg + 4;
+                        end
+                    else
+                        begin
+                        if (left == 1)
+                            begin
+                            if (blkpos_x_reg <= 10)
+                                blkpos_x_reg <= blkpos_x_reg;
+                            else
+                                blkpos_x_reg <= blkpos_x_reg - 4;
+                            end
+                        end
+                    end
+                end
+            end
+         end
+         end
+         end
+         end
+         end
+        end
+    end
+    
+    // car mov    
+    always @ (posedge sixclk)
+        if (carpos_x_reg >= 1286)
+            begin
+            carpos_x_reg <= 10;
+            end
+        else 
+            begin
+            carpos_x_reg <= carpos_x_reg + 10;
+            end
+
+    // carpos0 mov    
+    always @ (posedge sixclk)
+        if (carpos01_x_reg >= 1286)
+            begin
+            carpos01_x_reg <= 10;
+            end
+        else 
+            begin
+            carpos01_x_reg <= carpos01_x_reg + 10;
+            end
+
+            
+    always @ (posedge sixclk)
+       if (carpos1_x_reg <= 10)
+           begin
+           carpos1_x_reg <= 1286;
+           end
+       else 
+           begin
+           carpos1_x_reg <= carpos1_x_reg - 7;
+           end
+           
+    always @ (posedge sixclk)
+        if (carpos11_x_reg <= 10)
+            begin
+            carpos11_x_reg <= 1286;
+            end
+        else 
+            begin
+            carpos11_x_reg <= carpos11_x_reg - 7;
+            end
+            
+    always @ (posedge sixclk)
+       if (carpos2_x_reg >= 1286)
+           begin
+           carpos2_x_reg <= 10;
+           end
+       else 
+           begin
+           carpos2_x_reg <= carpos2_x_reg + 4;
+           end
+    
+    always @ (posedge sixclk)
+        if (carpos21_x_reg >= 1286)
+            begin
+            carpos21_x_reg <= 10;
+            end
+        else 
+            begin
+            carpos21_x_reg <= carpos21_x_reg + 4;
+            end
+   
+    //log mov        
+    always @ (posedge sixclk)
+        if (logpos_x_reg >= 1286)
+            begin
+            logpos_x_reg <= 10;
+            end
+        else 
+            begin
+            logpos_x_reg <= logpos_x_reg + 2;
+            end
+    
+    always @ (posedge sixclk)
+        if (logpos01_x_reg >= 1286)
+            begin
+            logpos01_x_reg <= 10;
+            end
+        else 
+            begin
+            logpos01_x_reg <= logpos01_x_reg + 2;
+            end
+            
+    always @ (posedge sixclk)
+        if (logpos1_x_reg <= 10)
+            begin
+            logpos1_x_reg <= 1286;
+            end
+        else 
+            begin
+            logpos1_x_reg <= logpos1_x_reg - 5;
+            end
+     
+     always @ (posedge sixclk)                  
+        if (logpos11_x_reg <= 10)               
+            begin                              
+            logpos11_x_reg <= 1286;             
+            end                                
+        else                                   
+            begin                              
+            logpos11_x_reg <= logpos11_x_reg - 5;
+            end                                
+            
+     always @ (posedge sixclk)
+        if (logpos2_x_reg >= 1286)
+            begin
+            logpos2_x_reg <= 10;
+            end
+        else 
+            begin
+            logpos2_x_reg <= logpos2_x_reg + 7;
+            end
+            
+    always @ (posedge sixclk)
+        if (logpos21_x_reg >= 1286)
+            begin
+            logpos21_x_reg <= 10;
+            end
+        else 
+            begin
+            logpos21_x_reg <= logpos21_x_reg + 7;
+            end
+    
+        assign frogpos_x = blkpos_x_reg;
+        assign frogpos_y = blkpos_y_reg;
+                
+        assign carpos_x = carpos_x_reg;
+        assign carpos_y = carpos_y_reg;
+        assign carpos1_x = carpos1_x_reg;
+        assign carpos1_y = carpos1_y_reg;
+        assign carpos2_x = carpos2_x_reg;
+        assign carpos2_y = carpos2_y_reg;
+        assign carpos01_x = carpos01_x_reg;
+        assign carpos01_y = carpos01_y_reg;
+        assign carpos11_x = carpos11_x_reg;
+        assign carpos11_y = carpos11_y_reg;
+        assign carpos21_x = carpos21_x_reg;  
+        assign carpos21_y = carpos21_y_reg;
+        
+        assign logpos_x = logpos_x_reg;
+        assign logpos_y = logpos_y_reg;
+        assign logpos01_x = logpos01_x_reg;
+        assign logpos01_y = logpos01_y_reg;
+        assign logpos1_x = logpos1_x_reg;
+        assign logpos1_y = logpos1_y_reg;
+        assign logpos11_x = logpos11_x_reg;
+        assign logpos11_y = logpos11_y_reg;
+        assign logpos2_x = logpos2_x_reg;
+        assign logpos2_y = logpos2_y_reg;
+        assign logpos21_x = logpos21_x_reg;
+        assign logpos21_y = logpos21_y_reg;
+        
+        assign lostlive = lostlive_reg;
+        
+        assign win = win_reg;
+               
+endmodule
