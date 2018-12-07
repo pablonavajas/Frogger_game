@@ -1,0 +1,594 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 27.11.2018 15:47:40
+// Design Name: 
+// Module Name: drawcon
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module drawcon (
+    input gen_clk,
+    input [10:0]frogpos_x,
+    input [9:0]frogpos_y,
+    input [10:0] carpos_x,
+    input [9:0] carpos_y,
+    input [10:0] carpos01_x,   
+    input [9:0] carpos01_y,    
+    input [10:0] carpos1_x,
+    input [9:0] carpos1_y,
+    input [10:0] carpos11_x,  
+    input [9:0] carpos11_y, 
+    input [10:0] carpos2_x,
+    input [9:0] carpos2_y,
+    input [10:0] carpos21_x, 
+    input [9:0] carpos21_y,  
+    input [10:0] logpos_x,
+    input [9:0] logpos_y,
+    input [10:0] logpos01_x,
+    input [9:0] logpos01_y,
+    input [10:0] logpos1_x,
+    input [9:0] logpos1_y,
+    input [10:0] logpos11_x,
+    input [9:0] logpos11_y,
+    input [10:0] logpos2_x,
+    input [9:0] logpos2_y,
+    input [10:0] logpos21_x,
+    input [9:0] logpos21_y,
+    input [10:0]draw_x,
+    input [9:0]draw_y, 
+    output [3:0]draw_r,
+    output [3:0]draw_g,
+    output [3:0]draw_b,
+    input winf,
+    input lost,
+    output [9:0]addr_f, 
+    input [11:0]dout_f,
+    output [18:0]addr_w,
+    input [11:0]dout_w
+    );
+
+    blk_mem_gen_0 your_instance_name (
+      .clka(gen_clk),    // input wire clka
+      .ena(1),      // input wire ena
+      //.wea(wea),      // input wire [0 : 0] wea
+      .addra(addr_f),  // input wire [9 : 0] addra
+      //.dina(dina),    // input wire [11 : 0] dina
+      .douta(dout_f)  // output wire [11 : 0] douta
+    );
+    
+    reg [9:0] addr_f_reg;
+    
+    blk_mem_gen_1 winscreen (
+      .clka(gen_clk),    // input wire clka
+      .ena(1),      // input wire ena
+      //.wea(wea),      // input wire [0 : 0] wea
+      .addra(addr_w),  // input wire [18 : 0] addra
+      //.dina(dina),    // input wire [11 : 0] dina
+      .douta(dout_w)  // output wire [11 : 0] douta
+    );
+    
+    reg [18:0] addr_w_reg;
+    
+    reg [3:0] draw_r_win;
+    reg [3:0] draw_g_win;
+    reg [3:0] draw_b_win;
+    
+    reg [3:0] draw_r_lost;
+    reg [3:0] draw_g_lost;
+    reg [3:0] draw_b_lost;
+        
+    reg [3:0]bg_r = 4'd0;
+    reg [3:0]bg_g = 4'd0;
+    reg [3:0]bg_b = 4'd0;
+    
+    reg [3:0]blk_r = 0;
+    reg [3:0]blk_g = 0;
+    reg [3:0]blk_b = 0;
+    
+    reg [3:0]draw_r_reg = 0;
+    reg [3:0]draw_g_reg = 0;
+    reg [3:0]draw_b_reg = 0;
+    
+    reg [3:0]draw_r_regF;
+    reg [3:0]draw_g_regF;
+    reg [3:0]draw_b_regF;
+    
+    reg [3:0] car_r = 0;
+    reg [3:0] car_g = 0;
+    reg [3:0] car_b = 0;
+    reg [3:0] car01_r = 0; 
+    reg [3:0] car01_g = 0; 
+    reg [3:0] car01_b = 0; 
+    reg [3:0] car1_r = 0;
+    reg [3:0] car1_g = 0;
+    reg [3:0] car1_b = 0;
+    reg [3:0] car11_r = 0;
+    reg [3:0] car11_g = 0;
+    reg [3:0] car11_b = 0;
+    reg [3:0] car2_r = 0;
+    reg [3:0] car2_g = 0;
+    reg [3:0] car2_b = 0;
+    reg [3:0] car21_r = 0; 
+    reg [3:0] car21_g = 0; 
+    reg [3:0] car21_b = 0; 
+    
+    reg [3:0] log_r = 0;
+    reg [3:0] log_g = 0;
+    reg [3:0] log_b = 0;
+    reg [3:0] log01_r = 0;
+    reg [3:0] log01_g = 0;
+    reg [3:0] log01_b = 0;
+    reg [3:0] log1_r = 0;
+    reg [3:0] log1_g = 0;
+    reg [3:0] log1_b = 0;
+    reg [3:0] log11_r = 0;
+    reg [3:0] log11_g = 0;
+    reg [3:0] log11_b = 0;
+    reg [3:0] log2_r = 0;
+    reg [3:0] log2_g = 0;
+    reg [3:0] log2_b = 0;
+    reg [3:0] log21_r = 0;
+    reg [3:0] log21_g = 0;
+    reg [3:0] log21_b = 0;
+    
+    reg [10:0] frogpos_x_reg;
+    reg [9:0] frogpos_y_reg;
+    
+    // Background:
+    
+    always @ *
+    if (draw_x >= 10 && draw_x <= 1430 && draw_y >= 10 && draw_y <= 890)
+    begin
+        // River:
+        if (draw_y >= 100 && draw_y <= 400)
+        begin
+            bg_r <= 4'd0;
+            bg_g <= 4'd0;
+            bg_b <= 4'd9;
+        end
+        else 
+        begin
+            //road:
+            if (draw_y >= 500 && draw_y <=800)
+            begin
+                // lines:
+                if (draw_y >= 595 && draw_y <= 605 | draw_y >= 695 && draw_y <= 705)
+                begin
+                    //line 1 and 2:
+                    if (draw_x >= 10 && draw_x <= 58 | draw_x >= 106 && draw_x <= 154 |draw_x >= 202 && draw_x <= 250 |draw_x >= 298 && draw_x <= 346 |draw_x >= 394 && draw_x <= 442 |draw_x >= 490 && draw_x <= 538 |draw_x >= 586 && draw_x <= 634 |draw_x >= 682 && draw_x <= 730 |draw_x >= 778 && draw_x <= 826 |draw_x >= 874 && draw_x <= 922 |draw_x >= 970 && draw_x <= 1018 |draw_x >= 1066 && draw_x <= 1114 |draw_x >= 1162 && draw_x <= 1210 |draw_x >= 1258 && draw_x <= 1306 |draw_x >= 1354 && draw_x <= 1402)
+                        begin
+                        bg_r <= 4'd15;
+                        bg_g <= 4'd15;
+                        bg_b <= 4'd15;
+                        end
+                    //give lines the color of the road when not white:
+                    else
+                        begin                
+                        bg_r <= 4'd7;    
+                        bg_g <= 4'd7;    
+                        bg_b <= 4'd7;    
+                        end 
+                end
+                // color road:                  
+                else
+                begin
+                    bg_r <= 4'd7;
+                    bg_g <= 4'd7;
+                    bg_b <= 4'd7;
+                end
+            end
+            // do other stuff:
+            else
+            begin
+                // finish line:
+                if (draw_y >= 10 && draw_y <= 100)
+                begin
+                    // first finish line
+                    if (draw_y >= 25 && draw_y <= 55)
+                    begin
+                        // set finish line 1
+                        if (draw_x >= 10 && draw_x <= 58 | draw_x >= 106 && draw_x <= 154 |draw_x >= 202 && draw_x <= 250 |draw_x >= 298 && draw_x <= 346 |draw_x >= 394 && draw_x <= 442 |draw_x >= 490 && draw_x <= 538 |draw_x >= 586 && draw_x <= 634 |draw_x >= 682 && draw_x <= 730 |draw_x >= 778 && draw_x <= 826 |draw_x >= 874 && draw_x <= 922 |draw_x >= 970 && draw_x <= 1018 |draw_x >= 1066 && draw_x <= 1114 |draw_x >= 1162 && draw_x <= 1210 |draw_x >= 1258 && draw_x <= 1306 |draw_x >= 1354 && draw_x <= 1402)
+                        begin
+                            bg_r <= 4'd15;
+                            bg_g <= 4'd15;
+                            bg_b <= 4'd15;
+                        end
+                        else
+                        begin
+                            bg_r <= 4'd0;
+                            bg_g <= 4'd0;
+                            bg_b <= 4'd0;
+                        end
+                    end
+                    // do the 2nd finish line and grass:
+                    else
+                    begin
+                        // second finish line:
+                        if (draw_y >= 55 && draw_y <= 85)
+                        begin
+                            //set finish line 2:
+                            if (draw_x >= 10 && draw_x <= 58 | draw_x >= 106 && draw_x <= 154 |draw_x >= 202 && draw_x <= 250 |draw_x >= 298 && draw_x <= 346 |draw_x >= 394 && draw_x <= 442 |draw_x >= 490 && draw_x <= 538 |draw_x >= 586 && draw_x <= 634 |draw_x >= 682 && draw_x <= 730 |draw_x >= 778 && draw_x <= 826 |draw_x >= 874 && draw_x <= 922 |draw_x >= 970 && draw_x <= 1018 |draw_x >= 1066 && draw_x <= 1114 |draw_x >= 1162 && draw_x <= 1210 |draw_x >= 1258 && draw_x <= 1306 |draw_x >= 1354 && draw_x <= 1402)                                       
+                            begin                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                bg_r <= 4'd0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                bg_g <= 4'd0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                bg_b <= 4'd0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                            end                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+                            else                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+                            begin                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                bg_r <= 4'd15;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                bg_g <= 4'd15;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                bg_b <= 4'd15;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                            end                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+                        end
+                        //Give grass color to the rest of that area:
+                        else
+                        begin
+                            bg_r <= 4'd0;
+                            bg_g <= 4'd9;
+                            bg_b <= 4'd2;
+                        end
+                    end
+                end
+                else
+                begin
+                    bg_r <= 4'd0;
+                    bg_g <= 4'd9;
+                    bg_b <= 4'd2;
+                end
+            end
+        end
+    end
+    //Border:
+    else
+    begin
+        bg_r <= 4'd15;
+        bg_g <= 4'd15;
+        bg_b <= 4'd15;
+    end
+    
+    //Frog:
+    
+    always @ * 
+    if (draw_x >= frogpos_x && draw_x <= frogpos_x + 32 && draw_y >= frogpos_y && draw_y <= frogpos_y + 32)
+    begin
+        addr_f_reg <= (((draw_y - frogpos_y) * 6'd32) + (draw_x - frogpos_x));
+    end
+    
+    //winscreen
+    always @ *
+    if (draw_x >= 360 && draw_x <= 1080 && draw_y >= 225 && draw_y <= 675)
+    begin
+        addr_w_reg <= (((draw_y - 360) * 720) + (draw_x - 225));
+    end
+    // Car:
+    
+    always @ *
+    if (draw_x >= carpos_x && draw_x <= carpos_x + 144 && draw_y >= carpos_y && draw_y <= carpos_y + 80)
+    begin
+        car_r <= 4'd15;
+        car_g <= 4'd0;
+        car_b <= 4'd0;
+    end
+    else
+        begin
+        car_r <= 4'd0;
+        car_g <= 4'd0; 
+        car_b <= 4'd0; 
+        end  
+
+ always @ *
+    if (draw_x >= carpos01_x && draw_x <= carpos01_x + 144 && draw_y >= carpos01_y && draw_y <= carpos01_y + 80)
+    begin
+        car01_r <= 4'd15;
+        car01_g <= 4'd0;
+        car01_b <= 4'd0;
+    end
+    else
+        begin
+        car01_r <= 4'd0;
+        car01_g <= 4'd0; 
+        car01_b <= 4'd0; 
+        end
+
+    always @ *
+    if (draw_x >= carpos1_x && draw_x <= carpos1_x + 144 && draw_y >= carpos1_y && draw_y <= carpos1_y + 80)
+    begin
+            car1_r <= 4'd15;
+            car1_g <= 4'd0;
+            car1_b <= 4'd0;
+        end
+        else
+            begin
+            car1_r <= 4'd0;
+            car1_g <= 4'd0; 
+            car1_b <= 4'd0; 
+            end
+            
+    always @ *
+    if (draw_x >= carpos11_x && draw_x <= carpos11_x + 144 && draw_y >= carpos11_y && draw_y <= carpos11_y + 80)
+    begin
+            car11_r <= 4'd15;
+            car11_g <= 4'd0;
+            car11_b <= 4'd0;
+        end
+        else
+            begin
+            car11_r <= 4'd0;
+            car11_g <= 4'd0; 
+            car11_b <= 4'd0; 
+            end
+    
+    always @ *
+       if (draw_x >= carpos2_x && draw_x <= carpos2_x + 144 && draw_y >= carpos2_y && draw_y <= carpos2_y + 80)
+       begin
+           car2_r <= 4'd15;
+           car2_g <= 4'd0;
+           car2_b <= 4'd0;
+       end
+       else
+           begin
+           car2_r <= 4'd0;
+           car2_g <= 4'd0; 
+           car2_b <= 4'd0; 
+           end
+            
+    always @ *
+       if (draw_x >= carpos21_x && draw_x <= carpos21_x + 144 && draw_y >= carpos21_y && draw_y <= carpos21_y + 80)
+       begin
+           car21_r <= 4'd15;
+           car21_g <= 4'd0;
+           car21_b <= 4'd0;
+       end
+       else
+           begin
+           car21_r <= 4'd0;
+           car21_g <= 4'd0; 
+           car21_b <= 4'd0; 
+           end
+            
+    // Log:
+    
+    always @ *
+        if (draw_x >= logpos_x && draw_x <= logpos_x + 144 && draw_y >= logpos_y && draw_y <= logpos_y + 80)
+        begin
+            log_r <= 4'd14;
+            log_g <= 4'd9;
+            log_b <= 4'd5;
+        end
+        else
+            begin
+            log_r <= 4'd0;
+            log_g <= 4'd0; 
+            log_b <= 4'd0; 
+            end
+            
+     always @ *
+        if (draw_x >= logpos01_x && draw_x <= logpos01_x + 144 && draw_y >= logpos01_y && draw_y <= logpos01_y + 80)
+        begin
+            log01_r <= 4'd14;
+            log01_g <= 4'd9;
+            log01_b <= 4'd5;
+        end
+        else
+            begin
+            log01_r <= 4'd0;
+            log01_g <= 4'd0; 
+            log01_b <= 4'd0; 
+            end
+            
+     always @ *
+        if (draw_x >= logpos1_x && draw_x <= logpos1_x + 288 && draw_y >= logpos1_y && draw_y <= logpos1_y + 80)
+        begin
+            log1_r <= 4'd14;
+            log1_g <= 4'd9;
+            log1_b <= 4'd5;
+        end
+        else
+            begin
+            log1_r <= 4'd0;
+            log1_g <= 4'd0; 
+            log1_b <= 4'd0; 
+            end
+            
+    always @ *
+        if (draw_x >= logpos11_x && draw_x <= logpos11_x + 288 && draw_y >= logpos11_y && draw_y <= logpos11_y + 80)
+        begin
+            log11_r <= 4'd14;
+            log11_g <= 4'd9;
+            log11_b <= 4'd5;
+        end
+        else
+            begin
+            log11_r <= 4'd0;
+            log11_g <= 4'd0; 
+            log11_b <= 4'd0; 
+            end
+            
+     always @ *
+        if (draw_x >= logpos2_x && draw_x <= logpos2_x + 144 && draw_y >= logpos2_y && draw_y <= logpos2_y + 80)
+        begin
+            log2_r <= 4'd14;
+            log2_g <= 4'd9;
+            log2_b <= 4'd5;
+        end
+        else
+            begin
+            log2_r <= 4'd0;
+            log2_g <= 4'd0; 
+            log2_b <= 4'd0; 
+            end       
+     
+     always @ *
+        if (draw_x >= logpos21_x && draw_x <= logpos21_x + 144 && draw_y >= logpos21_y && draw_y <= logpos21_y + 80)
+        begin
+            log21_r <= 4'd14;
+            log21_g <= 4'd9;
+            log21_b <= 4'd5;
+        end
+        else
+            begin
+            log21_r <= 4'd0;
+            log21_g <= 4'd0; 
+            log21_b <= 4'd0; 
+            end         
+     
+    // Recognise blocks instead of background:               
+    always @ *
+    if (draw_x >= frogpos_x && draw_x <= frogpos_x + 32 && draw_y >= frogpos_y && draw_y <= frogpos_y + 32)
+        begin
+        draw_r_reg <= dout_f[11:8];
+        draw_g_reg <= dout_f[7:4]; 
+        draw_b_reg <= dout_f[3:0]; 
+        end
+    else
+        if (car_r == 15 && car_g == 0 && car_b == 0)
+            begin
+            draw_r_reg <= car_r;
+            draw_g_reg <= car_g;
+            draw_b_reg <= car_b;
+            end
+        else
+        if (car01_r == 15 && car01_g == 0 && car01_b == 0)
+        begin
+            draw_r_reg <= car01_r;
+            draw_g_reg <= car01_g;
+            draw_b_reg <= car01_b;
+        end
+        else
+            if ( car1_r == 15 && car1_g == 0 && car1_b == 0)
+                begin
+                draw_r_reg <= car1_r;
+                draw_g_reg <= car1_g;
+                draw_b_reg <= car1_b;
+                end
+                else
+                if ( car11_r == 15 && car11_g == 0 && car11_b == 0)
+                    begin
+                    draw_r_reg <= car11_r;
+                    draw_g_reg <= car11_g;
+                    draw_b_reg <= car11_b;
+                    end
+                else
+                if ( car2_r == 15 && car2_g == 0 && car2_b == 0)
+                    begin
+                    draw_r_reg <= car2_r;
+                    draw_g_reg <= car2_g;
+                    draw_b_reg <= car2_b;
+                    end
+                else
+                if ( car21_r == 15 && car21_g == 0 && car21_b == 0)
+                    begin
+                    draw_r_reg <= car21_r;
+                    draw_g_reg <= car21_g;
+                    draw_b_reg <= car21_b;
+                    end
+                    
+                    else
+                        if (log_r == 14 && log_g == 9 && log_b == 5)
+                            begin
+                            draw_r_reg <= log_r;
+                            draw_g_reg <= log_g;
+                            draw_b_reg <= log_b;
+                            end 
+                        else
+                        if (log01_r == 14 && log01_g == 9 && log01_b == 5)
+                            begin
+                            draw_r_reg <= log01_r;
+                            draw_g_reg <= log01_g;
+                            draw_b_reg <= log01_b;
+                            end 
+                        else
+                        if (log1_r == 14 && log1_g == 9 && log1_b == 5)
+                               begin
+                               draw_r_reg <= log1_r;
+                               draw_g_reg <= log1_g;
+                               draw_b_reg <= log1_b;
+                               end 
+                           else
+                           if (log11_r == 14 && log11_g == 9 && log11_b == 5)
+                                  begin                                   
+                                  draw_r_reg <= log11_r;                   
+                                  draw_g_reg <= log11_g;                   
+                                  draw_b_reg <= log11_b;                   
+                                  end                                     
+                              else                                        
+                              if (log2_r == 14 && log2_g == 9 && log2_b == 5)
+                                     begin
+                                     draw_r_reg <= log2_r;
+                                     draw_g_reg <= log2_g;
+                                     draw_b_reg <= log2_b;
+                                     end 
+                               else
+                               if (log21_r == 14 && log21_g == 9 && log21_b == 5)
+                                     begin
+                                     draw_r_reg <= log21_r;
+                                     draw_g_reg <= log21_g;
+                                     draw_b_reg <= log21_b;
+                                     end 
+                               else
+                               begin
+                               draw_r_reg <= bg_r;
+                               draw_g_reg <= bg_g;
+                               draw_b_reg <= bg_b;
+                               end
+    
+    always @ *
+    if (draw_x >= 360 && draw_x <= 1080 && draw_y >= 225 && draw_y <= 675)
+    begin
+        draw_r_win <= dout_w[11:8];
+        draw_g_win <= dout_w[7:4];
+        draw_b_win <= dout_w[3:0];
+    end
+    else
+    begin
+        draw_r_win <= bg_r;
+        draw_g_win <= bg_g;
+        draw_b_win <= bg_b;
+    end                     
+    
+    assign addr_f = addr_f_reg;
+        
+    assign addr_w = addr_w_reg;
+    
+    always @ *
+    begin
+        if (lost == 1)
+        begin
+        draw_r_regF <= draw_r_lost;
+        draw_g_regF <= draw_g_lost;
+        draw_b_regF <= draw_b_lost;
+        end
+        else
+        if (winf == 1)
+        begin
+        draw_r_regF <= draw_r_win;
+        draw_g_regF <= draw_g_win;
+        draw_b_regF <= draw_b_win;
+        end
+        else
+        begin
+        draw_r_regF <= draw_r_reg;
+        draw_g_regF <= draw_g_reg;
+        draw_b_regF <= draw_b_reg;
+        end
+    end
+    
+    assign draw_r = draw_r_regF;
+    assign draw_g = draw_g_regF;
+    assign draw_b = draw_b_regF;
+    
+endmodule
