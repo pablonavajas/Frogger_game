@@ -1,0 +1,217 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 27.11.2018 14:14:19
+// Design Name: 
+// Module Name: gametop
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module gametop(
+    input clk,
+    input centre,
+    output [3:0] pix_r,
+    output [3:0] pix_g,
+    output [3:0] pix_b,
+    output hsync,
+    output vsync,
+    input up,
+    input down,
+    input right,
+    input left,
+    output LED0,
+    output LED1, 
+    output LED2, 
+    output LED3, 
+    output LED4, 
+    output LED5, 
+    output LED6, 
+    output LED7, 
+    output LED8, 
+    output LED9, 
+    output LED10,
+    output LED11,
+    output LED12,
+    output LED13,
+    output LED14,
+    output LED15,
+    output a,      
+    output b,      
+    output c,      
+    output d,      
+    output e,      
+    output f,      
+    output g,      
+    output [7:0] an
+    );
+    
+    wire win;
+    reg winf_reg = 0;
+    wire lost;
+    reg lost_reg = 0;
+    
+    reg [3:0]draw_r_reg;
+    reg [3:0]draw_g_reg;
+    reg [3:0]draw_b_reg;
+    
+    wire [3:0]draw_r;
+    wire [3:0]draw_g;
+    wire [3:0]draw_b;
+    
+    wire gen_clk;
+    wire [10:0] curr_x;
+    wire [9:0] curr_y;
+    
+    reg sixclk;
+    
+    wire [10:0] frogpos_x;
+    wire [9:0] frogpos_y;
+    
+    wire [10:0] carpos_x;
+    wire [9:0] carpos_y;
+    wire [10:0] carpos01_x;  
+    wire [9:0] carpos01_y;   
+    wire [10:0] carpos1_x;
+    wire [9:0] carpos1_y;
+    wire [10:0] carpos11_x;   
+    wire [9:0] carpos11_y;    
+    wire [10:0] carpos2_x;
+    wire [9:0] carpos2_y;
+    wire [10:0] carpos21_x;
+    wire [9:0] carpos21_y; 
+    
+    wire [10:0] logpos_x;
+    wire [9:0] logpos_y;
+    wire [10:0] logpos01_x;
+    wire [9:0] logpos01_y;
+    wire [10:0] logpos1_x;
+    wire [9:0] logpos1_y;
+    wire [10:0] logpos11_x;
+    wire [9:0] logpos11_y;
+    wire [10:0] logpos2_x;
+    wire [9:0] logpos2_y;
+    wire [10:0] logpos21_x;
+    wire [9:0] logpos21_y;    
+    
+    wire w6;
+    wire lostlive;
+    wire winf;
+    
+    wire return = 0;
+    reg return_reg = 0;
+    
+    reg [3:0] hexcnt1 = 4'h5;     
+    reg [3:0] hexcnt2=4'h0;       
+    reg [3:0] hexcnt3=4'h0;       
+    reg [3:0] hexcnt4=4'h0;       
+                                  
+    reg [3:0] deccnt1= 0;         
+    reg [3:0] deccnt2= 0;         
+    reg [3:0] deccnt3= 0;         
+    reg [3:0] deccnt4= 0;  
+    
+    reg LED_reg = 0;
+    
+    vga_out VGA (.clk(gen_clk), .pix_r(pix_r), .pix_g(pix_g), .pix_b(pix_b), .hsync(hsync), .vsync(vsync), .draw_r(draw_r), .draw_g(draw_g), .draw_b(draw_b), .curr_y(curr_y), .curr_x(curr_x));
+    
+    drawcon DC (.gen_clk(gen_clk), .lost(lost), .winf(winf), .draw_x(curr_x), .draw_y(curr_y),.draw_r(draw_r), .draw_g(draw_g), .draw_b(draw_b), .frogpos_x(frogpos_x), .frogpos_y(frogpos_y), .carpos_x(carpos_x), .carpos_y(carpos_y), .carpos01_x(carpos01_x), .carpos01_y(carpos01_y), .carpos1_x(carpos1_x), .carpos1_y(carpos1_y), .carpos11_x(carpos11_x), .carpos11_y(carpos11_y), .carpos2_x(carpos2_x), .carpos2_y(carpos2_y), .carpos21_x(carpos21_x), .carpos21_y(carpos21_y), .logpos_x(logpos_x), .logpos_y(logpos_y), .logpos01_x(logpos01_x), .logpos01_y(logpos01_y), .logpos1_x(logpos1_x), .logpos1_y(logpos1_y), .logpos11_x(logpos11_x), .logpos11_y(logpos11_y), .logpos2_x(logpos2_x), .logpos2_y(logpos2_y), .logpos21_x(logpos21_x), .logpos21_y(logpos21_y));
+    
+    FrogMove FG (.centre(centre), .win(win), .lostlive(lostlive), .clk(w6), .sixclk(sixclk),  .up(up),  .down(down), .right(right), .left(left), .frogpos_x(frogpos_x), .frogpos_y(frogpos_y), .carpos_x(carpos_x), .carpos_y(carpos_y), .carpos01_x(carpos01_x), .carpos01_y(carpos01_y), .carpos1_x(carpos1_x), .carpos1_y(carpos1_y), .carpos11_x(carpos11_x), .carpos11_y(carpos11_y), .carpos2_x(carpos2_x), .carpos2_y(carpos2_y), .carpos21_x(carpos21_x), .carpos21_y(carpos21_y), .logpos_x(logpos_x), .logpos_y(logpos_y), .logpos01_x(logpos01_x), .logpos01_y(logpos01_y), .logpos1_x(logpos1_x), .logpos1_y(logpos1_y), .logpos11_x(logpos11_x), .logpos11_y(logpos11_y), .logpos2_x(logpos2_x), .logpos2_y(logpos2_y), .logpos21_x(logpos21_x), .logpos21_y(logpos21_y));
+    
+    seginterface SI (.a(a), .b(b), .c(c), .d(d), .e(e), .f(f), .g(g), .an(an), .clk(clk), .rst(rst), .div_clk(w6), .dig0(hexcnt1), .dig1(hexcnt2), .dig2(hexcnt3), .dig3(hexcnt4),.dig4(deccnt1), .dig5(deccnt2), .dig6(deccnt3), .dig7(deccnt4));
+    
+    //CarMov CM1 (.sixclk(sixclk), .carpos_x(carpos_x), .carpos_y(carpos_y));
+    
+    //LogMov LM1 (.sixclk(sixclk), .logpos_x(logpos_x), .logpos_y(logpos_y));
+    
+    reg [20:0]clk_div = 0;
+    
+    always @ (posedge clk)
+    begin
+    clk_div <= clk_div + 1;
+    if (clk_div == 20'd833333)
+    begin
+        clk_div <= 0;
+        sixclk <= !sixclk;
+    end
+    end
+    
+    always @ (posedge sixclk)
+    begin
+    if (centre == 1)
+    begin
+        lost_reg <= 0;
+        hexcnt1 <= 5;
+        return_reg <= 1;
+        winf_reg <= 0;
+    end
+    else
+    if (win == 1)
+    begin
+        winf_reg <= 1;
+    end
+    else
+    if (lostlive == 1)
+        begin
+        LED_reg <= 1;
+        winf_reg <= 0;
+        if (hexcnt1 <= 0)
+            begin
+            lost_reg <= 1;
+            end
+        else 
+            begin
+            hexcnt1 <= hexcnt1 - 1;
+            end
+        end
+    else
+        begin
+        LED_reg <= 0;
+        return_reg <= 0;
+        winf_reg <= 0;
+        end
+    end
+    
+    assign return = return_reg;
+    assign lost = lost_reg;
+    assign winf = winf_reg;
+    
+    assign LED0 = LED_reg;
+    assign LED1 = LED_reg;
+    assign LED2 = LED_reg;
+    assign LED3 = LED_reg;
+    assign LED4 = LED_reg;
+    assign LED5 = LED_reg;
+    assign LED6 = LED_reg;
+    assign LED7 = LED_reg;
+    assign LED8 = LED_reg;
+    assign LED9 = LED_reg;
+    assign LED10 = LED_reg;
+    assign LED11 = LED_reg;
+    assign LED12 = LED_reg;
+    assign LED13 = LED_reg;
+    assign LED14 = LED_reg;
+    assign LED15 = LED_reg;
+    
+    clk_wiz_0 clkwiz
+       (
+        // Clock out ports
+        .clk_out1(gen_clk),     // output clk_out1
+       // Clock in ports
+        .clk_in1(clk));      // input clk_in1
+    // INST_TAG_END ------ End INSTANTIATION Template ---------
+    
+endmodule
